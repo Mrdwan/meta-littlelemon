@@ -103,7 +103,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
     delivery_crew = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.filter(groups__name='Delivery crew'),
-        write_only=True,
         allow_null=True,
         required=False
     )

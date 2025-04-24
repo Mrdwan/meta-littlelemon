@@ -5,7 +5,8 @@ from rest_framework import generics, status
 from .models import MenuItem, Cart, Order, OrderItem
 from django.contrib.auth.models import User, Group
 from .serializers import MenuItemSerializer, UserSerializer, CartSerializer, OrderSerializer
-from .permissions import IsManager, ReadOnlyOrIsManager, CanAccessOrderDetails # Added CanAccessOrderDetails
+from .permissions import IsManager, ReadOnlyOrIsManager, CanAccessOrderDetails
+from .filters import MenuItemFilter, OrderFilter
 from rest_framework.response import Response
 from django.db import transaction
 
@@ -14,6 +15,8 @@ class MenuItems(generics.ListCreateAPIView):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
     permission_classes = [ReadOnlyOrIsManager]
+    filterset_class = MenuItemFilter
+    ordering_fields = ['price', 'title']
 
 class MenuItemDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = MenuItem.objects.all()
@@ -99,8 +102,9 @@ class CartMenuItems(generics.ListCreateAPIView):
         )
 
 class Orders(generics.ListCreateAPIView):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    filterset_class = OrderFilter
+    ordering_fields = ['total', 'date']
 
     def get_queryset(self):
         user = self.request.user
