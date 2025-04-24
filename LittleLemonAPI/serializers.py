@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import MenuItem, Category, Cart
-from django.contrib.auth.models import User, Group
+from .models import MenuItem, Category, Cart, Order, OrderItem
+from django.contrib.auth.models import User
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,7 +54,7 @@ class CartSerializer(serializers.ModelSerializer):
         decimal_places=2,
         read_only=True
     )
-    unit_price = serializers.DecimalField(
+    price = serializers.DecimalField(
         max_digits=6,
         decimal_places=2,
         read_only=True
@@ -78,3 +78,37 @@ class CartSerializer(serializers.ModelSerializer):
             instance.price = instance.unit_price * instance.quantity
             instance.save()
         return instance
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    menuitem = MenuItemSerializer(read_only=True)
+    unit_price = serializers.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        read_only=True
+    )
+    price = serializers.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        read_only=True
+    )
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'menuitem', 'quantity', 'unit_price', 'price']
+        read_only_fields = ['id', 'menuitem', 'quantity', 'unit_price', 'price']
+
+class OrderSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    orderitem_set = OrderItemSerializer(read_only=True, many=True)
+
+    delivery_crew = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.filter(groups__name='Delivery crew'),
+        write_only=True,
+        allow_null=True,
+        required=False
+    )
+
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'delivery_crew', 'status', 'total', 'date', 'orderitem_set']
+        read_only_fields = ['id', 'user', 'delivery_crew', 'total', 'date', 'orderitem_set']
