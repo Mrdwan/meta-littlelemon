@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MenuItem, Category
+from .models import MenuItem, Category, Cart
 from django.contrib.auth.models import User, Group
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -45,3 +45,36 @@ class UserSerializer(serializers.ModelSerializer):
             user.set_password(pw)
             user.save()
         return user
+
+class CartSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    menuitem = serializers.PrimaryKeyRelatedField(queryset=MenuItem.objects.all())
+    unit_price = serializers.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        read_only=True
+    )
+    unit_price = serializers.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        read_only=True
+    )
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'user', 'menuitem', 'quantity', 'unit_price', 'price']
+        read_only_fields = ['id', 'user', 'menuitem', 'unit_price', 'price']
+
+    def create(self, validated_data):
+        menuitem = validated_data['menuitem']
+        quantity = validated_data.get('quantity', 1)
+        validated_data['unit_price'] = menuitem.price
+        validated_data['price'] = menuitem.price * quantity
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if 'quantity' in validated_data:
+            instance.quantity = validated_data['quantity']
+            instance.price = instance.unit_price * instance.quantity
+            instance.save()
+        return instance

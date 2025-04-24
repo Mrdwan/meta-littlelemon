@@ -1,4 +1,4 @@
-from .views import MenuItems, MenuItemDetails, Managers, ManagerDetails, DeliveryCrew, DeliveryCrewDetails
+from .views import MenuItems, MenuItemDetails, Managers, ManagerDetails, DeliveryCrew, DeliveryCrewDetails, CartMenuItems
 """
 URL configuration for LittleLemon project.
 
@@ -22,6 +22,7 @@ urlpatterns = [
     path('menu-items/<int:pk>', MenuItemDetails.as_view(), name="menu-item-details"),
     path('groups/managers/users', Managers.as_view(), name="managers"),
     path('groups/managers/users/<int:pk>', ManagerDetails.as_view(), name="delivery-crew-item-details"),
-    path('groups/delivery-crew/users', DeliveryCrew.as_view(), name="managers"),
+    path('groups/delivery-crew/users', DeliveryCrew.as_view(), name="deliver-crew"),
     path('groups/delivery-crew/users/<int:pk>', DeliveryCrewDetails.as_view(), name="delivery-crew-item-details"),
+    path('cart/menu-items', CartMenuItems.as_view(), name="cart")
 ]

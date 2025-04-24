@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from rest_framework import generics
-from .models import MenuItem
+from rest_framework import generics, status
+from .models import MenuItem, Cart
 from django.contrib.auth.models import User, Group
-from .serializers import MenuItemSerializer, UserSerializer
+from .serializers import MenuItemSerializer, UserSerializer, CartSerializer
 from .permissions import IsManager, ReadOnlyOrIsManager
 from rest_framework.response import Response
 
@@ -76,6 +76,20 @@ class DeliveryCrewDetails(generics.RetrieveDestroyAPIView):
         user = self.get_object()
         user.groups.clear()
 
+        return Response(
+            "Success",
+            status=status.HTTP_200_OK
+        )
+
+class CartMenuItems(generics.ListCreateAPIView):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        Cart.objects.filter(user=self.request.user).delete()
         return Response(
             "Success",
             status=status.HTTP_200_OK
