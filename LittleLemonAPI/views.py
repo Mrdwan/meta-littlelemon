@@ -147,4 +147,4 @@ class OrderDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        return super().get_queryset()
+        return Order.objects.filter(user=self.request.user)

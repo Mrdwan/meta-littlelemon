@@ -63,7 +63,7 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id', 'user', 'menuitem', 'quantity', 'unit_price', 'price']
-        read_only_fields = ['id', 'user', 'menuitem', 'unit_price', 'price']
+        read_only_fields = ['id', 'menuitem', 'unit_price', 'price']
 
     def create(self, validated_data):
         menuitem = validated_data['menuitem']
@@ -98,7 +98,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'menuitem', 'quantity', 'unit_price', 'price']
 
 class OrderSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
     orderitem_set = OrderItemSerializer(read_only=True, many=True)
 
     delivery_crew = serializers.PrimaryKeyRelatedField(
@@ -111,4 +111,4 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'user', 'delivery_crew', 'status', 'total', 'date', 'orderitem_set']
-        read_only_fields = ['id', 'user', 'delivery_crew', 'total', 'date', 'orderitem_set']
+        read_only_fields = ['id', 'delivery_crew', 'total', 'date', 'orderitem_set']
