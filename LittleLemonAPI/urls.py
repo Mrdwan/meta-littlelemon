@@ -1,4 +1,4 @@
-from .views import MenuItems, MenuItemDetails
+from .views import MenuItems, MenuItemDetails, Managers, ManagerDetails, DeliveryCrew, DeliveryCrewDetails
 """
 URL configuration for LittleLemon project.
 
@@ -19,5 +19,9 @@ from django.urls import path
 
 urlpatterns = [
     path('menu-items', MenuItems.as_view(), name="menu-items"),
-    path('menu-items/<int:pk>', MenuItemDetails.as_view(), name="menu-item-details")
+    path('menu-items/<int:pk>', MenuItemDetails.as_view(), name="menu-item-details"),
+    path('groups/managers/users', Managers.as_view(), name="managers"),
+    path('groups/managers/users/<int:pk>', ManagerDetails.as_view(), name="delivery-crew-item-details"),
+    path('groups/delivery-crew/users', DeliveryCrew.as_view(), name="managers"),
+    path('groups/delivery-crew/users/<int:pk>', DeliveryCrewDetails.as_view(), name="delivery-crew-item-details"),
 ]
