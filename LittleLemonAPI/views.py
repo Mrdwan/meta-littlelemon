@@ -5,7 +5,7 @@ from rest_framework import generics, status
 from .models import MenuItem, Cart, Order, OrderItem
 from django.contrib.auth.models import User, Group
 from .serializers import MenuItemSerializer, UserSerializer, CartSerializer, OrderSerializer
-from .permissions import IsManager, ReadOnlyOrIsManager
+from .permissions import IsManager, ReadOnlyOrIsManager, CanAccessOrderDetails # Added CanAccessOrderDetails
 from rest_framework.response import Response
 from django.db import transaction
 
@@ -145,6 +145,4 @@ class Orders(generics.ListCreateAPIView):
 class OrderDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-
-    def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+    permission_classes = [CanAccessOrderDetails]
